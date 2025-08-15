@@ -1,0 +1,24 @@
+{
+  "name": "syntax-social",
+  "version": "1.0.0",
+  "description": "This platfrom is for connecting developers ",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [
+    "nodejs",
+    "js",
+    "backend",
+    "mongodb",
+    "express",
+    "restapi"
+  ],
+  "author": "Arpan Sarkar",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
