@@ -11,13 +11,13 @@ const app=express();
 //     res.send("Here the url may or may not have b but it will still gonna work");
 // })
 // app.get("/ab+c",(req,res)=>{
-//     res.send("this is a normal route");
+//     res.send("Here we can write as much b we want in between a and c");
 // })
 // app.get("/ab*c",(req,res)=>{
-//     res.send("this is a normal route");
+//     res.send("Here can write anything in between ab and c still the url will work");
 // })
 // app.get("/(ab)?c",(req,res)=>{
-//     res.send("this is a normal route");
+//     res.send("Here the url may or may not need ab ");
 // })
 // app.get("/abc",(req,res)=>{
 //     res.send("this is a normal route");
