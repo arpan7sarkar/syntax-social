@@ -5,6 +5,29 @@ const app=express();
 //     res.send("Hello from server");//server is responsing
 // })
 
+//example use case of routes
+
+// app.get('/ab?c',(req,res)=>{
+//     res.send("Here the url may or may not have b but it will still gonna work");
+// })
+// app.get("/ab+c",(req,res)=>{
+//     res.send("this is a normal route");
+// })
+// app.get("/ab*c",(req,res)=>{
+//     res.send("this is a normal route");
+// })
+// app.get("/(ab)?c",(req,res)=>{
+//     res.send("this is a normal route");
+// })
+// app.get("/abc",(req,res)=>{
+//     res.send("this is a normal route");
+// })
+
+
+// app.get(/a/,(req,res)=>{// here a is a regex this means if in any url there exist at least one a then that url will take you into this route
+//     res.send("You have the word 'a' in your url");
+// })
+
 //in the industry we dont use app.use cause in this format get/post/put/delete all works same so we use app.get
 app.get("/hello",(req,res)=>{
     res.send("Hello from a get rquest");
