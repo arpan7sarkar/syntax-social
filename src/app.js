@@ -31,13 +31,13 @@ const app=express();
 //in the industry we dont use app.use cause in this format get/post/put/delete all works same so we use app.get
 
 //
-app.get('/*fly$',(req,res)=>{
-    res.send("This url ends with fly");
+// app.get('/*fly$',(req,res)=>{
+//     res.send("This url ends with fly");
+// })
+app.get("/user/:userId/:name",(req,res)=>{
+    console.log(req.params);
+    res.send(`This link is sending details`);
 })
-app.get("/hello",(req,res)=>{
-    res.send("Hello from a get rquest");
-})
-
 app.post("/hello",(req,res)=>{
     res.send("Hello from a post rquest");
 })
@@ -56,7 +56,6 @@ app.use("/test/2",(req,res)=>{
 app.use("/test",(req,res)=>{
     res.send("Hello from test");
 })
-
 app.use("/routeName",(req,res)=>{
     res.send("Hello from server");
 })
