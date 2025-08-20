@@ -9,3 +9,5 @@ const userSchema= new mongoose.Schema({
     age:{type:Number},
     gender:{type:String}
 })
+const userModel=mongoose.model("sser",userSchema);
+model.exports={userModel}
