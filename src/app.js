@@ -1,5 +1,7 @@
 console.log("Starting a new project");
+require("dotenv").config();
 const express=require('express');
+require("../config/database.js");
 const app=express();
 const {userVerification,adminVerification}=require("../utils/index.js");
 //you can use multiple route handelrs at a time and here res.send works like return function (mostly but not purely true) next still works after using res.send (there are bugs nothing is sure here)
