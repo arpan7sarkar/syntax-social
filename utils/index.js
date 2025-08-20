@@ -1,2 +1,3 @@
 const {adminVerification,userVerification}=require("./middlewares/isVerified");
-module.exports={adminVerification,userVerification};
+const {connectDB}=require("../config/database.js")
+module.exports={adminVerification,userVerification,connectDB};
