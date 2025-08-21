@@ -3,18 +3,20 @@ require("dotenv").config();
 const express=require('express');
 const {connectDB}=require("./config/database.js");
 const {userModel}=require("./model/user.js");
-
-
 const app=express();
+
+app.use(express.json());
+
 const {userVerification,adminVerification}=require("./utils/index.js");
 app.post("/signup",async (req,res)=>{
-    const user =new userModel({
-        fName:"Shakal",
-        lName:"Khiladi",
-        emailId:"Shaku@gmaill.com",
-        password:"theOnePiece",
-        age:106
-    })
+    // const user =new userModel({
+    //     fName:"Shakal",
+    //     lName:"Khiladi",
+    //     emailId:"Shaku@gmaill.com",
+    //     password:"theOnePiece",
+    //     age:106
+    // })
+    const user=new userModel(req.body);
     
     try {
         await user.save();
