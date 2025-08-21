@@ -31,6 +31,15 @@ app.get("/user",async (req,res)=>{
     const user=await userModel.find({emailId:email})
     res.send(user);
 })
+app.get("/userById",async (req,res)=>{
+    const id=req.body._id;
+    const user=await userModel.findById(id);
+    try {
+        res.send(user);
+    } catch (error) {
+        res.status(400).send("The is is not found ");
+    }
+})
 //ALl the users from the db 
 app.get("/feed", async (req,res)=>{
     const users=await userModel.find({});//this will showcase all the users/documents that are avilable 
