@@ -10,4 +10,4 @@ const userSchema= new mongoose.Schema({
     gender:{type:String}
 })
 const userModel=mongoose.model("sser",userSchema);
-model.exports={userModel}
+module.exports={userModel}
