@@ -4,10 +4,10 @@ const express=require('express');
 const {connectDB}=require("./config/database.js");
 const {userModel}=require("./model/user.js");
 const app=express();
+const {userVerification,adminVerification}=require("./utils/index.js");
 
 app.use(express.json());
 
-const {userVerification,adminVerification}=require("./utils/index.js");
 app.post("/signup",async (req,res)=>{
     // const user =new userModel({
     //     fName:"Shakal",
@@ -25,6 +25,23 @@ app.post("/signup",async (req,res)=>{
         res.status(400).send("The user is not saved" + error);
     }
 })
+//getting a particuler user using their email address
+app.get("/user",async (req,res)=>{
+    const email=req.body.emailId;
+    const user=await userModel.find({emailId:email})
+    res.send(user);
+})
+//ALl the users from the db 
+app.get("/feed", async (req,res)=>{
+    const users=await userModel.find({});//this will showcase all the users/documents that are avilable 
+    if(!users){
+        res.status(400).send("THere are no user ")
+    }else{
+        console.log("User found succesfully");
+        res.send(users);
+    }
+})
+
 connectDB().then(()=>{
     console.log("MongoDb setup done");
     app.listen(7777,()=>{
