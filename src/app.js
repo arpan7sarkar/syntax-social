@@ -5,9 +5,7 @@ const {connectDB}=require("./config/database.js");
 const {userModel}=require("./model/user.js");
 const app=express();
 const {userVerification,adminVerification}=require("./utils/index.js");
-
 app.use(express.json());
-
 app.post("/signup",async (req,res)=>{
     // const user =new userModel({
     //     fName:"Shakal",
@@ -31,6 +29,25 @@ app.get("/user",async (req,res)=>{
     const user=await userModel.find({emailId:email})
     res.send(user);
 })
+app.delete("/user",async (req,res)=>{
+    const id=req.body._id;
+    try {
+        const user=await userModel.findByIdAndDelete(id)
+        res.send("user is succesfully deleted");
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+app.patch("/updateById",async (req,res)=>{
+    const id=req.body._id;
+    try {
+        await userModel.findByIdAndUpdate(id,req.body);
+        res.send("Id has succesfully updated");
+    } catch (error) {
+        res.status(400).send("The is is not found ");
+    }
+})
 app.get("/userById",async (req,res)=>{
     const id=req.body._id;
     const user=await userModel.findById(id);
@@ -50,7 +67,6 @@ app.get("/feed", async (req,res)=>{
         res.send(users);
     }
 })
-
 connectDB().then(()=>{
     console.log("MongoDb setup done");
     app.listen(7777,()=>{
@@ -59,8 +75,4 @@ connectDB().then(()=>{
 }).catch((err)=>{
     console.log(err)
 })
-
-
-
 //give port here
-
