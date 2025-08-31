@@ -10,7 +10,8 @@ const bcrypt = require("bcrypt");
 
 app.use(express.json());
 app.post("/signup", async (req, res) => {
-  const { fName, lName, emailId, password, age, skills,gender,about } = req.body;
+  const { fName, lName, emailId, password, age, skills, gender, about } =
+    req.body;
   //validating the user given datas
   validateUser(req);
   //used bcrypt
@@ -32,6 +33,26 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     res.status(400).send("The user is not saved" + error);
   }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    //checking if email id exists
+    const user = await userModel.findOne({ emailId });
+    if (!user) throw new Error("Invalid credintials "); //cant directly write that email does not exist or else hacker would get to know the details
+  
+    const ispassValid=bcrypt.compare(password,user.password)
+  
+    if(ispassValid){
+      res.send("Login succesfull");
+    }else{
+      throw new Error("Invalid credintials")
+    }
+  } catch (error) {
+    res.status(400).send("Invalid user details");
+  }
+
 });
 //getting a particuler user using their email address
 app.get("/user", async (req, res) => {
