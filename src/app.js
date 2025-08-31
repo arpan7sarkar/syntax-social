@@ -5,16 +5,26 @@ const { connectDB } = require("./config/database.js");
 const { userModel } = require("./model/user.js");
 const app = express();
 const { userVerification, adminVerification } = require("./utils/index.js");
+const { validateUser } = require("./utils/validation.js");
+const bcrypt = require("bcrypt");
+
 app.use(express.json());
 app.post("/signup", async (req, res) => {
-  // const user =new userModel({
-  //     fName:"Shakal",
-  //     lName:"Khiladi",
-  //     emailId:"Shaku@gmaill.com",
-  //     password:"theOnePiece",
-  //     age:106
-  // })
-  const user = new userModel(req.body);
+  const { fName, lName, emailId, password, age, skills,gender,about } = req.body;
+  //validating the user given datas
+  validateUser(req);
+  //used bcrypt
+  const passwordHash = await bcrypt.hash(password, 10); //encrypted the password
+  console.log(passwordHash);
+
+  const user = new userModel({
+    fName,
+    lName,
+    emailId,
+    password: passwordHash,
+    age,
+    skills,
+  });
 
   try {
     await user.save();
@@ -42,17 +52,28 @@ app.delete("/user", async (req, res) => {
 app.patch("/user/:userId", async (req, res) => {
   const id = req.params.userId;
   try {
-    const allowedUpdates = ["_id", "fName", "lName", "password", "age","skills"];
+    const allowedUpdates = [
+      "_id",
+      "fName",
+      "lName",
+      "password",
+      "age",
+      "skills",
+    ];
     const isUpdateAllowed = Object.keys(req.body).every((key) =>
       allowedUpdates.includes(key)
     );
     if (!isUpdateAllowed) {
       throw new Error("Update is not allowed for these vlaues");
     }
-    if(req.body?.skills?.length>5){
-        throw new Error("You can't add more than 5 skills");
+    if (req.body?.skills?.length > 5) {
+      throw new Error("You can't add more than 5 skills");
     }
-    await userModel.findByIdAndUpdate(id, req.body, (runValidator = "true" && !id)); //without runValidator the validation schemas will not gonna work here
+    await userModel.findByIdAndUpdate(
+      id,
+      req.body,
+      (runValidator = "true" && !id)
+    ); //without runValidator the validation schemas will not gonna work here
     res.send("Id has succesfully updated");
   } catch (error) {
     res.status(400).send("Update failed " + error.message);
