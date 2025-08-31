@@ -39,8 +39,8 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-app.patch("/updateById", async (req, res) => {
-  const id = req.body._id;
+app.patch("/user/:userId", async (req, res) => {
+  const id = req.params.userId;
   try {
     const allowedUpdates = ["_id", "fName", "lName", "password", "age"];
     const isUpdateAllowed = Object.keys(req.body).every((key) =>
@@ -52,7 +52,7 @@ app.patch("/updateById", async (req, res) => {
     await userModel.findByIdAndUpdate(id, req.body, (runValidator = "true" && !id)); //without runValidator the validation schemas will not gonna work here
     res.send("Id has succesfully updated");
   } catch (error) {
-    res.status(400).send("Update failed" + error.message);
+    res.status(400).send("Update failed " + error.message);
   }
 });
 app.get("/userById", async (req, res) => {
