@@ -42,12 +42,15 @@ app.delete("/user", async (req, res) => {
 app.patch("/user/:userId", async (req, res) => {
   const id = req.params.userId;
   try {
-    const allowedUpdates = ["_id", "fName", "lName", "password", "age"];
+    const allowedUpdates = ["_id", "fName", "lName", "password", "age","skills"];
     const isUpdateAllowed = Object.keys(req.body).every((key) =>
       allowedUpdates.includes(key)
     );
     if (!isUpdateAllowed) {
       throw new Error("Update is not allowed for these vlaues");
+    }
+    if(req.body?.skills?.length>5){
+        throw new Error("You can't add more than 5 skills");
     }
     await userModel.findByIdAndUpdate(id, req.body, (runValidator = "true" && !id)); //without runValidator the validation schemas will not gonna work here
     res.send("Id has succesfully updated");

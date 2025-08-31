@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validate=require("validator");
 const userSchema = new mongoose.Schema({
   fName: {
     type: String,
@@ -8,8 +9,14 @@ const userSchema = new mongoose.Schema({
   lName: {
     type: String,
   },
-  emailId: { type: String, required: true , unique:true,lowercase:true,trim:true,},
-  password: { type: String, required: true },
+  emailId: { type: String, required: true , unique:true,lowercase:true,trim:true, validate(value){
+    if(!validate.isEmail(value)){
+        throw new Error("Email is not valid " + value);
+    }
+  }},
+  password: { type: String, required: true, minlength:8, validate(value){
+    if(!validate.password) throw new Error("The password is to simple " + value)
+  } },
   age: { type: Number },
   gender: { type: String ,validate(value){
     if(value.toLowerCase()!=("male"||"female"||"other")){
@@ -17,10 +24,10 @@ const userSchema = new mongoose.Schema({
     }
   }},
   photoUrl:{type:String},
-  about:{type:String,default:"Hey there I am using Syntax social"},
-  skills:{type:[String]}
+  about:{type:String,default:"Hey there I am using Syntax social" , minlength: 20},
+  skills:{type:[String]},
 },{
     timestamps:true//this will add the timestamp (created at and updated at)when the user is signed up 
 });
-const userModel = mongoose.model("sser", userSchema);
+const userModel = mongoose.model("users", userSchema);
 module.exports = { userModel };
