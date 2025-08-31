@@ -42,7 +42,14 @@ app.delete("/user", async (req, res) => {
 app.patch("/updateById", async (req, res) => {
   const id = req.body._id;
   try {
-    await userModel.findByIdAndUpdate(id, req.body,runValidator="true");//without runValidator the validation schemas will not gonna work here
+    const allowedUpdates = ["_id", "fName", "lName", "password", "age"];
+    const isUpdateAllowed = Object.keys(req.body).every((key) =>
+      allowedUpdates.includes(key)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Update is not allowed for these vlaues");
+    }
+    await userModel.findByIdAndUpdate(id, req.body, (runValidator = "true" && !id)); //without runValidator the validation schemas will not gonna work here
     res.send("Id has succesfully updated");
   } catch (error) {
     res.status(400).send("Update failed" + error.message);
