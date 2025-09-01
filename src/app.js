@@ -7,8 +7,13 @@ const app = express();
 const { userVerification, adminVerification } = require("./utils/index.js");
 const { validateUser } = require("./utils/validation.js");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+// Always remeber to use‼️await‼️‼️ 
+
 
 app.use(express.json());
+app.use(cookieParser());
 app.post("/signup", async (req, res) => {
   const { fName, lName, emailId, password, age, skills, gender, about } =
     req.body;
@@ -41,19 +46,34 @@ app.post("/login", async (req, res) => {
     //checking if email id exists
     const user = await userModel.findOne({ emailId });
     if (!user) throw new Error("Invalid credintials "); //cant directly write that email does not exist or else hacker would get to know the details
-  
-    const ispassValid=bcrypt.compare(password,user.password)
-  
-    if(ispassValid){
+
+    const ispassValid = await bcrypt.compare(password, user.password);
+    const jwtTOken = await jwt.sign({ _id: user._id }, "MyJwtSecret@arpan");
+    // console.log(jwtTOken);
+
+    if (ispassValid) {
+      res.cookie("token", jwtTOken);
       res.send("Login succesfull");
-    }else{
-      throw new Error("Invalid credintials")
+    } else {
+      throw new Error("Invalid credintials");
     }
   } catch (error) {
     res.status(400).send("Invalid user details");
   }
-
 });
+app.get("/profile", async (req, res) => {
+  try {
+    const cookie = req.cookies;
+    const { token } = cookie;
+    const decoded = await jwt.verify(token, "MyJwtSecret@arpan");
+    const { _id } = decoded;
+    const user = await userModel.findById(_id);
+    res.send(user);
+  } catch (error) {
+    res.status(400).send("Please relogin" + error);
+  }
+});
+
 //getting a particuler user using their email address
 app.get("/user", async (req, res) => {
   const email = req.body.emailId;
