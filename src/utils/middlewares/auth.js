@@ -1,5 +1,7 @@
+require("dotenv").config();
 const { userModel } = require("../../model/user");
 const jwt = require("jsonwebtoken");
+
 const userAuth = async (req, res, next) => {
   try {
     //get the token
@@ -16,12 +18,12 @@ const userAuth = async (req, res, next) => {
     }
     const { _id } = decoded;
     //get the usera
-    const user =await userModel.findById(_id);
+    const user = await userModel.findById(_id);
     if (!user) {
       throw new Error("Something went wrong Please relogin ");
       //user not found
     } else {
-        req.user=user;
+      req.user = user;
       next();
     }
   } catch (error) {
