@@ -46,7 +46,7 @@ app.post("/login", async (req, res) => {
     const user = await userModel.findOne({ emailId });
     if (!user) throw new Error("Invalid credintials "); //cant directly write that email does not exist or else hacker would get to know the details
 
-    const ispassValid = await bcrypt.compare(password, user.password);
+    const ispassValid = await user.validatePassword(password);//used user schema
     const jwtTOken = await user.getJWT();//used user schema
 
     if (ispassValid) {
