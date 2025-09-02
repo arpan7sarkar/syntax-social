@@ -6,11 +6,10 @@ const app = express();
 
 // Always remeber to use‼️await‼️‼️
 app.use(express.json());
-
-const { authRouter, profileRouter, connectionRouter } = require("./routes/index.route");
-app.use("/auth", authRouter);
-app.use("/profile", profileRouter);
-app.use("/connection", connectionRouter);
+const {authRouter,profileRouter,connectionRouter}=require("./routers/index.route.js");
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", connectionRouter);
 
 connectDB()
   .then(() => {
