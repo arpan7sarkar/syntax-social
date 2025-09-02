@@ -1,11 +1,12 @@
 const express = require("express");
 // const jwt = require("jsonwebtoken");
-const cookieParser=require('cookie-parser')
+const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const authRouter = express.Router();
 
 const { userModel } = require("../model/user.js");
 const { validateUser } = require("../utils/validation.js");
+const { userAuth } = require("../utils/middlewares/auth.js");
 authRouter.use(cookieParser());
 authRouter.post("/signup", async (req, res) => {
   const { fName, lName, emailId, password, age, skills, gender, about } =
@@ -40,17 +41,30 @@ authRouter.post("/login", async (req, res) => {
     const user = await userModel.findOne({ emailId });
     if (!user) throw new Error("Invalid credintials "); //cant directly write that email does not exist or else hacker would get to know the details
 
-    const ispassValid = await user.validatePassword(password);//used user schema
-    const jwtTOken = await user.getJWT();//used user schema
+    const ispassValid = await user.validatePassword(password); //used user schema
+    const jwtTOken = await user.getJWT(); //used user schema
 
     if (ispassValid) {
-      res.cookie("token", jwtTOken,{expires: new Date(Date.now() + 3600000)});//added cookie expiry to 1 hr
+      res.cookie("token", jwtTOken, {
+        expires: new Date(Date.now() + 3600000),
+      }); //added cookie expiry to 1 hr
       res.send("Login succesfull");
     } else {
       throw new Error("Invalid credintials");
     }
   } catch (error) {
     res.status(400).send("Invalid user details");
+  }
+});
+authRouter.post("/logout",  async (req, res) => {
+  try {
+    res.cookie("token",null,{
+      expires:new Date(Date.now())
+    })
+    res.send("Logout done");
+  } catch (error) {
+    console.log(error)
+    res.status(400).send("Logout faild");
   }
 });
 
