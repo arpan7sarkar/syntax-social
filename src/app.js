@@ -9,7 +9,8 @@ const { validateUser } = require("./utils/validation.js");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
-// Always remeber to use‼️await‼️‼️ 
+const { userAuth } = require("./utils/middlewares/auth.js");
+// Always remeber to use‼️await‼️‼️ leura bara
 
 
 app.use(express.json());
@@ -61,13 +62,14 @@ app.post("/login", async (req, res) => {
     res.status(400).send("Invalid user details");
   }
 });
-app.get("/profile", async (req, res) => {
+app.get("/profile",userAuth, async (req, res) => {
   try {
-    const cookie = req.cookies;
-    const { token } = cookie;
-    const decoded = await jwt.verify(token, "MyJwtSecret@arpan");
-    const { _id } = decoded;
-    const user = await userModel.findById(_id);
+    // const cookie = req.cookies;
+    // const { token } = cookie;
+    // const decoded = await jwt.verify(token, "MyJwtSecret@arpan");
+    // const { _id } = decoded;
+    // const user = await userModel.findById(_id);
+   const user=req.user;
     res.send(user);
   } catch (error) {
     res.status(400).send("Please relogin" + error);
