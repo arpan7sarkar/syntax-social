@@ -48,7 +48,7 @@ app.post("/login", async (req, res) => {
     if (!user) throw new Error("Invalid credintials "); //cant directly write that email does not exist or else hacker would get to know the details
 
     const ispassValid = await bcrypt.compare(password, user.password);
-    const jwtTOken = await jwt.sign({ _id: user._id }, "MyJwtSecret@arpan");
+    const jwtTOken = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
     // console.log(jwtTOken);
 
     if (ispassValid) {
@@ -61,12 +61,21 @@ app.post("/login", async (req, res) => {
     res.status(400).send("Invalid user details");
   }
 });
-app.get("/profile",userAuth, async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-   const user=req.user;
+    const user = req.user;
     res.send(user);
   } catch (error) {
     res.status(400).send("Please relogin" + error);
+  }
+});
+app.post("/sendConnectionRequest", userAuth, async (req, res) => {
+  console.log("Sending connection request");
+  //I don't have my fronend ready so have to write dummy version
+  try {
+    res.send("Connection request is send");
+  } catch (error) {
+    console.log(error)
   }
 });
 

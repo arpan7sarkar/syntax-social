@@ -9,7 +9,7 @@ const userAuth = async (req, res, next) => {
       //token not found
     }
     //validate the token
-    const decoded = await jwt.verify(token, "MyJwtSecret@arpan");
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded) {
       throw new Error("Something went wrong Please relogin ");
       //Token is wrong
