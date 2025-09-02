@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validate = require("validator");
+const jwt=require("jsonwebtoken")
 const userSchema = new mongoose.Schema(
   {
     fName: {
@@ -39,5 +40,10 @@ const userSchema = new mongoose.Schema(
     timestamps: true, //this will add the timestamp (created at and updated at)when the user is signed up
   }
 );
+//create JWT token schema
+userSchema.methods.getJWT=async function() {
+    return token=await jwt.sign({_id:this.id},process.env.JWT_SECRET,{expiresIn:'1h'})
+}
+
 const userModel = mongoose.model("users", userSchema);
 module.exports = { userModel };

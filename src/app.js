@@ -5,7 +5,6 @@ const { connectDB } = require("./config/database.js");
 const { userModel } = require("./model/user.js");
 const app = express();
 const { userVerification, adminVerification } = require("./utils/index.js");
-const { validateUser } = require("./utils/validation.js");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
@@ -48,11 +47,10 @@ app.post("/login", async (req, res) => {
     if (!user) throw new Error("Invalid credintials "); //cant directly write that email does not exist or else hacker would get to know the details
 
     const ispassValid = await bcrypt.compare(password, user.password);
-    const jwtTOken = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET,{expiresIn:"1h"});//added token expiry time
-    // console.log(jwtTOken);
+    const jwtTOken = await user.getJWT();//used user schema
 
     if (ispassValid) {
-      res.cookie("token", jwtTOken);
+      res.cookie("token", jwtTOken,{expires: new Date(Date.now() + 3600000)});//added cookie expiry to 1 hr
       res.send("Login succesfull");
     } else {
       throw new Error("Invalid credintials");
