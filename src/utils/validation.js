@@ -16,6 +16,19 @@ const validateUser = (req) => {
     );
   }
 };
-
-module.exports = { validateUser };
-
+const validForEdit =async (req) => {
+  const editable = [
+    "fName",
+    "lName",
+    "age",
+    "gender",
+    "skills",
+    "about",
+    "photoUrl"
+  ];
+  const isEditable = await Object.keys(req.body).every((field) => {
+    editable.includes(field)
+  });
+  return isEditable;
+};
+module.exports = { validateUser, validForEdit };
