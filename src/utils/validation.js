@@ -31,4 +31,7 @@ const validForEdit =async (req) => {
   });
   return isEditable;
 };
-module.exports = { validateUser, validForEdit };
+const validPass=(password)=>{
+    return isStrongPassword(password);
+}
+module.exports = { validateUser, validForEdit ,validPass};
