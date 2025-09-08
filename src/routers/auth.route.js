@@ -60,8 +60,7 @@ authRouter.post("/logout",  async (req, res) => {
   try {
     res.cookie("token",null,{
       expires:new Date(Date.now())
-    })
-    res.send("Logout done");
+    }).send("Logout done");//Used chaining method that is a good practice
   } catch (error) {
     console.log(error)
     res.status(400).send("Logout faild");
