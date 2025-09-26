@@ -26,3 +26,5 @@ POST /sendConnectionRequest
 GET /user/request/recived
 GET /connection
 GET /feed - it gets you other users 10+
+
+status:values:["ignore", "interested", "accepeted", "rejected"],
