@@ -1,13 +1,28 @@
 const express=require("express")
 const connectionRouter=express.Router();
 const { userAuth } = require("../utils/middlewares/auth.js");
+const {connectionModel}=require("../model/connectionRequest.js");
 
+connectionRouter.post("/reuest/send/:status/:toUserId", userAuth, async (req, res) => {
 
-connectionRouter.post("/sendConnectionRequest", userAuth, async (req, res) => {
-  console.log("Sending connection request");
-  //I don't have my fronend ready so have to write dummy version
   try {
-    res.send("Connection request is send");
+    const fromUserId=req.user._id;
+    const toUserId=req.params.toUserId;
+    const status=req.params.status;
+
+    const connnetionReq=new connectionModel({
+      fromUserId,
+      toUserId,
+      status,
+    })
+    const data=await connnetionReq.save();
+    res.json({
+      message:"Connection request send",
+      data
+    })
+    
+
+    
   } catch (error) {
     console.log(error);
   }
