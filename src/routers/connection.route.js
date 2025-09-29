@@ -2,6 +2,7 @@ const express = require("express");
 const connectionRouter = express.Router();
 const { userAuth } = require("../utils/middlewares/auth.js");
 const { connectionModel } = require("../model/connectionRequest.js");
+const { default: mongoose } = require("mongoose");
 
 connectionRouter.post(
   "/reuest/send/:status/:toUserId",
@@ -12,12 +13,24 @@ connectionRouter.post(
       const toUserId = req.params.toUserId;
       const status = req.params.status;
       const allowedStatus = ["interested", "ignored"];
+      const existingReq=await connectionModel.findOne({
+        $or:[
+          {fromUserId:fromUserId,toUserId:toUserId},
+          {fromUserId:toUserId,toUserId:fromUserId}
+        ]
+      })
       if (!allowedStatus.includes(status)) {
         res.json({
           message: "requested status is not valid",
         });
         return;
-      } else {
+      }else if(existingReq){
+        res.json({
+          message:"You have already sent a request",
+          data:existingReq
+        })
+      }
+      else {
         const connnetionReq = new connectionModel({
           fromUserId,
           toUserId,
@@ -39,8 +52,10 @@ connectionRouter.post(
   userAuth,
   async (req, res) => {
     const reqId = req.params.requestId;
+    const fromUserId = req.user._id;
+    const toUserId=await connectionModel.findById(reqId).select("toUserId");
     const status = req.params.status;
-    const allowedStatus = ["accept", "reject"];
+    const allowedStatus = ["accepeted", "rejected"];
     try {
       if (!allowedStatus.includes(status)) {
         res.json({
@@ -49,19 +64,20 @@ connectionRouter.post(
         return;
       }else{
         const connectionReq=new connectionModel({
-          reqId,
+          fromUserId,
+          toUserId,
           status
         });
-        const data = await connnetionReq.save();
+        const data = await connectionReq.save();
         res.json({
           message: "Connection request send",
           data,
         });
       }
     } catch (error) {
-      console.log(error);
-      req.json({
-        "message":"Error reviewing the request"
+      console.log(error.message);
+      res.json({
+        message:"Error reviewing the request"
       })
     }
   }
