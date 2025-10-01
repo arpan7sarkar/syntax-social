@@ -17,6 +17,7 @@ const connectionRequestSchema = mongoose.Schema({
     },
   },
 });
+// This method will be called before every save
 connectionRequestSchema.pre("save",function (next){
   const connectionRequest=this;
   if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)){
@@ -24,6 +25,7 @@ connectionRequestSchema.pre("save",function (next){
   }
   next();
 })
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 }, { unique: true });//compound index for fast search  
 const connectionModel = mongoose.model(
   "connectionRequest",
   connectionRequestSchema

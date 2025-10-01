@@ -9,9 +9,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       minlength: 3,
       required: true,
+      index: true,
     },
     lName: {
       type: String,
+      
     },
     emailId: {
       type: String,
