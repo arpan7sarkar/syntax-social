@@ -3,7 +3,7 @@ const connectionRouter = express.Router();
 const { userAuth } = require("../utils/middlewares/auth.js");
 const { connectionModel } = require("../model/connectionRequest.js");
 const { default: mongoose } = require("mongoose");
-const {userModel}=require("../model/user")
+const { userModel } = require("../model/user");
 connectionRouter.post(
   "/reuest/send/:status/:toUserId",
   userAuth,
@@ -20,22 +20,29 @@ connectionRouter.post(
           { fromUserId: toUserId, toUserId: fromUserId },
         ],
       });
+      const selfReq = await connectionModel.findOne({
+        $or: [{ fromUserId: fromUserId, toUserId: fromUserId }],
+      });
       if (!allowedStatus.includes(status)) {
         res.json({
           message: "requested status is not valid",
         });
         return;
-      }else if (!toUser) {
+      } else if (!toUser) {
         res.status(404).json({
           message: "User not found",
         });
-      } 
-      else if (existingReq) {
+      } else if (existingReq) {
         res.status(400).json({
           message: "You have already sent a request",
           data: existingReq,
         });
-      }  else {
+      } else if (selfReq) {
+        res.status(400).json({
+          message: "Self request is not allowed",
+          data: existingReq,
+        });
+      } else {
         const connnetionReq = new connectionModel({
           fromUserId,
           toUserId,
