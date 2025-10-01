@@ -20,22 +20,12 @@ connectionRouter.post(
           { fromUserId: toUserId, toUserId: fromUserId },
         ],
       });
-      const selfReq = await connectionModel.find({
-         fromUserId: fromUserId,
-        toUserId: fromUserId,
-      });
       if (!allowedStatus.includes(status)) {
         res.json({
           message: "requested status is not valid",
         });
         return;
-      }
-      else if (selfReq) {
-        res.status(400).json({
-          message: "Self request is not allowed",
-          data: existingReq,
-        });
-      } else if (!toUser) {
+      }else if (!toUser) {
         res.status(404).json({
           message: "User not found",
         });
@@ -52,12 +42,13 @@ connectionRouter.post(
         });
         const data = await connnetionReq.save();
         res.json({
-          message: "Connection request send",
+          message: req.user.fName+" is "+status+" to "+toUser.fName,
           data,
         });
       }
     } catch (error) {
       console.log(error);
+      res.status(400).send("Facing some erros");
     }
   }
 );
