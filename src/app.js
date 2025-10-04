@@ -6,7 +6,7 @@ const app = express();
 
 // Always remeber to use‼️await‼️‼️
 app.use(express.json());
-const {authRouter,profileRouter,connectionRouter}=require("./routers/index.route.js");
+const {authRouter,profileRouter,connectionRouter,userRouter}=require("./routers/index.route.js");
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRouter);
