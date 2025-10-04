@@ -2,7 +2,7 @@ const express = require("express");
 const connectionRouter = express.Router();
 const { userAuth } = require("../utils/middlewares/auth.js");
 const { connectionModel } = require("../model/connectionRequest.js");
-const { default: mongoose } = require("mongoose");
+const { default: mongoose, Connection } = require("mongoose");
 const { userModel } = require("../model/user");
 connectionRouter.post(
   "/request/send/:status/:toUserId",
@@ -25,7 +25,7 @@ connectionRouter.post(
           message: "requested status is not valid",
         });
         return;
-      }else if (!toUser) {
+      } else if (!toUser) {
         res.status(404).json({
           message: "User not found",
         });
@@ -34,7 +34,7 @@ connectionRouter.post(
           message: "You have already sent a request",
           data: existingReq,
         });
-      }  else {
+      } else {
         const connnetionReq = new connectionModel({
           fromUserId,
           toUserId,
@@ -42,7 +42,7 @@ connectionRouter.post(
         });
         const data = await connnetionReq.save();
         res.json({
-          message: req.user.fName+" is "+status+" to "+toUser.fName,
+          message: req.user.fName + " is " + status + " to " + toUser.fName,
           data,
         });
       }
@@ -56,36 +56,39 @@ connectionRouter.post(
   "/request/review/:status/:requestId",
   userAuth,
   async (req, res) => {
-    const reqId = req.params.requestId;
-    const fromUserId = req.user._id;
-    const toUserId = await connectionModel.findById(reqId).select("toUserId");
-    const status = req.params.status;
-    const allowedStatus = ["accepeted", "rejected"];
+    //Loggedin shoudl be toUser of send connection request
     try {
+      const reqId = req.params.requestId;
+      const loggedinUserId = req.user._id;
+      //Validate the status
+      const status = req.params.status;
+      const allowedStatus = ["accepted", "rejected"];
       if (!allowedStatus.includes(status)) {
-        res.json({
-          message: "requested status is not valid",
-        });
-        return;
-      } else {
-        const connectionReq = new connectionModel({
-          fromUserId,
-          toUserId,
-          status,
-        });
-        const data = await connectionReq.save();
-        res.json({
-          message: "Connection request send",
-          data,
+        return res.status(400).json({
+          message: "Status is not allowed!",
         });
       }
-    } catch (error) {
-      console.log(error.message);
-      res.json({
-        message: "Error reviewing the request",
+      //send/previous status must be interested
+      //request id should be valid
+      const connectionRequest = connectionModel.findOne({
+        _id: reqId,
+        status: "interested",
+        toUserId: loggedinUserId,
       });
+      if (!connectionRequest) {
+        return res.status(404).json({
+          message: "No connection request found!",
+        });
+      }
+      connectionRequest.status = status;
+      await connectionRequest.save();
+      res.json({
+        message: "Connection request has been " + status,
+        data: connectionRequest,
+      });
+    } catch (error) {
+      res.status(400).send("Facing some erros");
     }
   }
 );
-
 module.exports = { connectionRouter };
