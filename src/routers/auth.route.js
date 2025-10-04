@@ -29,7 +29,7 @@ authRouter.post("/signup", async (req, res) => {
     await user.save();
     res.send("New user had been created");
   } catch (error) {
-    res.status(400).send("The user is not saved" + error);
+    res.status(400).send("The user is not saved" + error.message);
   }
 });
 
