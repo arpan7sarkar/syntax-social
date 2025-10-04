@@ -9,8 +9,10 @@ userRouter.get("/user/request/recived",userAuth,async (req,res)=>{
         const request = await connectionModel.find({
             toUserId:loggedinUserId,
             status:"interested"
-        }).populate("fromUserId",["fName","lName"]);//after adding ref in a model, we can use populate here that means we can use populate to get their data
+        }).populate("fromUserId","fName lName photoUrl about age" );//after adding ref in a model, we can use populate here that means we can use populate to get their data
         //always remember to restrict populate else your important data will be exposed
+
+        // .populate("fromUserId",["fName","lName"]); we can also write populate in this way
         res.json({
             message:"Data feched succesfully\n",
             data:request,
