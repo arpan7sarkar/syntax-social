@@ -58,10 +58,8 @@ connectionRouter.post(
   async (req, res) => {
     //Loggedin shoudl be toUser of send connection request
     try {
-      const reqId = req.params.requestId;
-      const loggedinUserId = req.user._id;
-      //Validate the status
-      const status = req.params.status;
+      const {requestId,status} = req.params;
+      const loggedinUser = req.user;
       const allowedStatus = ["accepted", "rejected"];
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({
@@ -70,10 +68,10 @@ connectionRouter.post(
       }
       //send/previous status must be interested
       //request id should be valid
-      const connectionRequest = connectionModel.findOne({
-        _id: reqId,
+      const connectionRequest =await connectionModel.findOne({
+        _id: requestId,
+        toUserId: loggedinUser._id,
         status: "interested",
-        toUserId: loggedinUserId,
       });
       if (!connectionRequest) {
         return res.status(404).json({
@@ -81,12 +79,13 @@ connectionRouter.post(
         });
       }
       connectionRequest.status = status;
-      await connectionRequest.save();
+      const data =await connectionRequest.save();
       res.json({
-        message: "Connection request has been " + status,
-        data: connectionRequest,
+        message: "Connection request has been ",
+        data
       });
     } catch (error) {
+      console.log(error.message)
       res.status(400).send("Facing some erros");
     }
   }
