@@ -10,6 +10,8 @@ const {authRouter,profileRouter,connectionRouter}=require("./routers/index.route
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRouter);
+app.use("/", userRouter);
+
 
 connectDB()
   .then(() => {
