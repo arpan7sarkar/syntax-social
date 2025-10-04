@@ -2,7 +2,7 @@ const express = require("express");
 const userRouter = express.Router();
 const { userAuth } = require("../utils/middlewares/auth");
 const { connectionModel } = require("../model/connectionRequest");
-
+const USER_PUBLIC_DATA= "fName lName photoUrl about age";
 userRouter.get("/user/request/recived", userAuth, async (req, res) => {
   try {
     const loggedinUserId = req.user._id;
@@ -11,13 +11,15 @@ userRouter.get("/user/request/recived", userAuth, async (req, res) => {
         toUserId: loggedinUserId,
         status: "interested",
       })
-      .populate("fromUserId", "fName lName photoUrl about age"); //after adding ref in a model, we can use populate here that means we can use populate to get their data
+      .populate("fromUserId",USER_PUBLIC_DATA); //after adding ref in a model, we can use populate here that means we can use populate to get their data
     //always remember to restrict populate else your important data will be exposed
 
     // .populate("fromUserId",["fName","lName"]); we can also write populate in this way
+
+    const data=request.map((item)=>item.fromUserId);
     res.json({
       message: "Data feched succesfully\n",
-      data: request,
+      data
     });
   } catch (error) {
     console.log(error);
@@ -28,13 +30,18 @@ userRouter.get("/user/request/recived", userAuth, async (req, res) => {
 });
 userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
-    const loggedinUserId = req.user._id;
-    const connections = connectionModel.find({
+    const loggedinUser = req.user;
+    const myConnection =await connectionModel.find({
       $or: [
-        { toUserId: loggedinUserId, status: "accepted" },
-        { fromUserId: loggedinUserId, status: "accepted" },
+        { toUserId: loggedinUser._id, status: "accepted" },
+        { fromUserId: loggedinUser._id, status: "accepted" },
       ],
-    }).populate("fromUserId toUserId", "fName lName photoUrl about age");
+    }).populate("fromUserId", USER_PUBLIC_DATA);
+    const data=myConnection.map((item)=>item.fromUserId);
+    res.json({
+      message:"Your connnection requests are",data
+      
+    })
   } catch (error) {
     console.log(error.message);
     res.status(400).json({
