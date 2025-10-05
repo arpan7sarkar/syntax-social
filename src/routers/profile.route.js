@@ -11,7 +11,7 @@ const {
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
-    res.send(user);
+    res.json({data:user});
   } catch (error) {
     res.status(400).send("Please relogin" + error);
   }
@@ -27,7 +27,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
         user[key] = req.body[key];
       });
       await user.save();
-      res.send({
+      res.json({
         message: `${user.fName}'s profile had been updated`,
         data: user,
       });
@@ -49,7 +49,7 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
       const passwordHash = await bcrypt.hash(password, 10);
       user.password = passwordHash;
       await user.save();
-      res.send("Password had succesfully been changed ");
+      res.json({message:"Password had succesfully been changed "});
     }
   } catch (error) {
     console.log(error);

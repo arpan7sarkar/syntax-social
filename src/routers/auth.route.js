@@ -27,7 +27,7 @@ authRouter.post("/signup", async (req, res) => {
 
   try {
     await user.save();
-    res.send("New user had been created");
+    res.json({message:"New user had been created"});
   } catch (error) {
     res.status(400).send("The user is not saved" + error.message);
   }
@@ -47,7 +47,7 @@ authRouter.post("/login", async (req, res) => {
       res.cookie("token", jwtTOken, {
         expires: new Date(Date.now() + 3600000),
       }); //added cookie expiry to 1 hr
-      res.send("Login succesfull");
+      res.json({message:"Login succesfull"});
     } else {
       throw new Error("Invalid credintials");
     }
