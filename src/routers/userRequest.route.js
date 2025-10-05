@@ -3,7 +3,7 @@ const userRouter = express.Router();
 const { userAuth } = require("../utils/middlewares/auth");
 const { connectionModel } = require("../model/connectionRequest");
 const USER_PUBLIC_DATA = "fName lName photoUrl about age";
-const {userModel}=require("../model/user.js")
+const { userModel } = require("../model/user.js");
 userRouter.get("/user/request/recived", userAuth, async (req, res) => {
   try {
     const loggedinUserId = req.user._id;
@@ -59,31 +59,40 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   }
 });
 userRouter.get("/feed", userAuth, async (req, res) => {
+  // query : /feed?page=1&limit=10 after question mark what we write is a query
   try {
     const loggedinUser = req.user;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     const connections = await connectionModel
       .find({
         $or: [{ toUserId: loggedinUser._id }, { fromUserId: loggedinUser._id }],
       })
       .select("fromUserId toUserId");
-  
+
     const hideUserFromFeed = new set();
     connections.forEach((req) => {
       hideUserFromFeed.add(req.fromUserId.toString());
       hideUserFromFeed.add(req.toUserId.toString());
     });
-  
-    const users = await userModel.find({
-      $and: [
-        { _id: { $nin: Array.from(hideUserFromFeed) } },//nin menas not in this 
-        { _id: { $ne: loggedinUser._id } },//ne means not be equal to
-      ],
-    }).select(USER_PUBLIC_DATA);
+
+    const users = await userModel
+      .find({
+        $and: [
+          { _id: { $nin: Array.from(hideUserFromFeed) } }, //nin menas not in this
+          { _id: { $ne: loggedinUser._id } }, //ne means not be equal to
+        ],
+      })
+      .select(USER_PUBLIC_DATA)
+      .skip(skip)//skip & limit is inbuild fn in mongo db that limits and skips 
+      .limit(limit);
   } catch (error) {
     res.status(400).json({
-      message:"Facing some errors here",
-      error:error.message
-    })
+      message: "Facing some errors here",
+      error: error.message,
+    });
   }
 });
 module.exports = { userRouter };
