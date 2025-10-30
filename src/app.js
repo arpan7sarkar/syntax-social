@@ -5,7 +5,10 @@ const { connectDB } = require("./config/database.js");
 const app = express();
 const cors= require("cors");
 // Always remeber to use‼️await‼️‼️
-app.use(cors());
+app.use(cors({
+  origin:"http://localhost:5173",
+  credentials:true,
+}));
 app.use(express.json());
 const {authRouter,profileRouter,connectionRouter,userRouter}=require("./routers/index.route.js");
 app.use("/", authRouter);

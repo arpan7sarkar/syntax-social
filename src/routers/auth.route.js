@@ -47,7 +47,7 @@ authRouter.post("/login", async (req, res) => {
       res.cookie("token", jwtTOken, {
         expires: new Date(Date.now() + 3600000),
       }); //added cookie expiry to 1 hr
-      res.json({message:"Login succesfull"});
+      res.json({message:"Login succesfull",user});
     } else {
       throw new Error("Invalid credintials");
     }
