@@ -4,8 +4,8 @@
   "description": "This platfrom is for connecting developers ",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "nodemon ./src/app.js",
+    "dev": "nodemon ./src/app.js"
   },
   "keywords": [
     "nodejs",
@@ -20,6 +20,7 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
