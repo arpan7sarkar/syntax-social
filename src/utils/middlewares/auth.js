@@ -8,8 +8,8 @@ const userAuth = async (req, res, next) => {
     //get the token
     const { token } = req.cookies;
     if (!token) {
-      throw new Error("Something went wrong Please relogin ");
       //token not found
+      return res.status(401).send("Please login first");
     }
     //validate the token
     const decoded = await jwt.verify(token, process.env.JWT_SECRET);

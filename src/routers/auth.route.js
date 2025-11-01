@@ -50,10 +50,10 @@ authRouter.post("/login", async (req, res) => {
       }); //added cookie expiry to 1 hr
       res.send(user);
     } else {
-      throw new Error("Invalid credintials");
+      throw new Error("Incorrect Password");
     }
   } catch (error) {
-    res.status(400).send("Invalid user details");
+    res.status(400).send(error.message);
   }
 });
 authRouter.post("/logout",  async (req, res) => {
