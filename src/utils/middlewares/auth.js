@@ -28,7 +28,7 @@ const userAuth = async (req, res, next) => {
       next();
     }
   } catch (error) {
-    res.json({message:"Error ", error});
+    res.status(400).send(error);
   }
 };
 
