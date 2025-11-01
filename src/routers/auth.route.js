@@ -41,13 +41,14 @@ authRouter.post("/login", async (req, res) => {
     if (!user) throw new Error("Invalid credintials "); //cant directly write that email does not exist or else hacker would get to know the details
 
     const ispassValid = await user.validatePassword(password); //used user schema
-    const jwtTOken = await user.getJWT(); //used user schema
+   
 
     if (ispassValid) {
+       const jwtTOken = await user.getJWT(); //used user schema
       res.cookie("token", jwtTOken, {
         expires: new Date(Date.now() + 3600000),
       }); //added cookie expiry to 1 hr
-      res.json({message:"Login succesfull",user});
+      res.send(user);
     } else {
       throw new Error("Invalid credintials");
     }
