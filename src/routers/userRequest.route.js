@@ -58,22 +58,25 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     });
   }
 });
+
+
 userRouter.get("/feed", userAuth, async (req, res) => {
   // query : /feed?page=1&limit=10 after question mark what we write is a query
   try {
     const loggedinUser = req.user;
     const page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 10;
-    limit= limit>50?50:limit;
+    limit = limit > 50 ? 50 : limit;
     const skip = (page - 1) * limit;
 
     const connections = await connectionModel
       .find({
         $or: [{ toUserId: loggedinUser._id }, { fromUserId: loggedinUser._id }],
       })
-      .select("fromUserId toUserId");
+      .select("fromUserId toUserId")
+      .lean(); //lean method is used to reduce memory usage of a query
 
-    const hideUserFromFeed = new set();
+    const hideUserFromFeed = new Set();
     connections.forEach((req) => {
       hideUserFromFeed.add(req.fromUserId.toString());
       hideUserFromFeed.add(req.toUserId.toString());
@@ -81,19 +84,17 @@ userRouter.get("/feed", userAuth, async (req, res) => {
 
     const users = await userModel
       .find({
-        $and: [
-          { _id: { $nin: Array.from(hideUserFromFeed) } }, //nin menas not in this
-          { _id: { $ne: loggedinUser._id } }, //ne means not be equal to
-        ],
+        _id: { $nin: Array.from(hideUserFromFeed) },
+        _id: { $ne: loggedinUser._id },
       })
       .select(USER_PUBLIC_DATA)
-      .skip(skip)//skip & limit is inbuild fn in mongo db that limits and skips 
+      .skip(skip)
       .limit(limit);
+
+    res.json(users);
   } catch (error) {
-    res.status(400).json({
-      message: "Facing some errors here",
-      error: error.message,
-    });
+    console.log(error);
+    res.status(400).json({ message: "Facing some issues" + error.message });
   }
 });
 module.exports = { userRouter };
