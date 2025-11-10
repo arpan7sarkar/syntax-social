@@ -15,7 +15,7 @@ authRouter.post("/signup", async (req, res) => {
   validateUser(req);
   //used bcrypt
   const passwordHash = await bcrypt.hash(password, 10); //encrypted the password
-  console.log(passwordHash);
+  // console.log(passwordHash);
   const user = new userModel({
     fName,
     lName,
@@ -27,9 +27,13 @@ authRouter.post("/signup", async (req, res) => {
 
   try {
     await user.save();
-    res.json({message:"New user had been created"});
+    const jwtTOken = await user.getJWT(); //used user schema
+      res.cookie("token", jwtTOken, {
+        expires: new Date(Date.now() + 3600000),
+      });
+    res.json({ message: "New user had been created" ,user});
   } catch (error) {
-    res.status(400).send("The user is not saved" + error.message);
+    res.status(400).send("The user is not saved" + error);
   }
 });
 
@@ -41,10 +45,9 @@ authRouter.post("/login", async (req, res) => {
     if (!user) throw new Error("Invalid credintials "); //cant directly write that email does not exist or else hacker would get to know the details
 
     const ispassValid = await user.validatePassword(password); //used user schema
-   
 
     if (ispassValid) {
-       const jwtTOken = await user.getJWT(); //used user schema
+      const jwtTOken = await user.getJWT(); //used user schema
       res.cookie("token", jwtTOken, {
         expires: new Date(Date.now() + 3600000),
       }); //added cookie expiry to 1 hr
@@ -56,13 +59,15 @@ authRouter.post("/login", async (req, res) => {
     res.status(400).send(error.message);
   }
 });
-authRouter.post("/logout",  async (req, res) => {
+authRouter.post("/logout", async (req, res) => {
   try {
-    res.cookie("token",null,{
-      expires:new Date(Date.now())
-    }).send("Logout done");//Used chaining method that is a good practice
+    res
+      .cookie("token", null, {
+        expires: new Date(Date.now()),
+      })
+      .send("Logout done"); //Used chaining method that is a good practice
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(400).send("Logout faild");
   }
 });
