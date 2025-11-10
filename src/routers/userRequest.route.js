@@ -17,7 +17,7 @@ userRouter.get("/user/request/recived", userAuth, async (req, res) => {
 
     // .populate("fromUserId",["fName","lName"]); we can also write populate in this way
 
-    const data = request
+    const data = request;
     res.json({
       message: "Data feched succesfully\n",
       data,
@@ -59,7 +59,6 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   }
 });
 
-
 userRouter.get("/feed", userAuth, async (req, res) => {
   // query : /feed?page=1&limit=10 after question mark what we write is a query
   try {
@@ -84,8 +83,10 @@ userRouter.get("/feed", userAuth, async (req, res) => {
 
     const users = await userModel
       .find({
-        _id: { $nin: Array.from(hideUserFromFeed) },
-        _id: { $ne: loggedinUser._id },
+        $and: [
+          { _id: { $nin: Array.from(hideUserFromFeed) } },
+          { _id: { $ne: loggedinUser._id } },
+        ],
       })
       .select(USER_PUBLIC_DATA)
       .skip(skip)
