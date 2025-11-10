@@ -17,7 +17,7 @@ userRouter.get("/user/request/recived", userAuth, async (req, res) => {
 
     // .populate("fromUserId",["fName","lName"]); we can also write populate in this way
 
-    const data = request.map((item) => item.fromUserId);
+    const data = request
     res.json({
       message: "Data feched succesfully\n",
       data,
@@ -42,7 +42,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       .populate("fromUserId", USER_PUBLIC_DATA)
       .populate("toUserId", USER_PUBLIC_DATA);
     const data = myConnection.map((item) => {
-      if (item.fromUserId.toString === loggedinUser._id.toString()) {
+      if (item.fromUserId._id.toString() === loggedinUser._id.toString()) {
         return item.toUserId;
       }
       return item.fromUserId;
