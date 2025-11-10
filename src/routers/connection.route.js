@@ -85,8 +85,8 @@ connectionRouter.post(
         data
       });
     } catch (error) {
-      console.log(error.message)
-      res.status(400).send("Facing some erros");
+      console.log(error)
+      res.status(400).send("Facing some erros"+error);
     }
   }
 );
