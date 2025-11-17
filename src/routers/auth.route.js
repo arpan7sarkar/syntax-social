@@ -28,10 +28,14 @@ authRouter.post("/signup", async (req, res) => {
   try {
     await user.save();
     const jwtTOken = await user.getJWT(); //used user schema
-      res.cookie("token", jwtTOken, {
-        expires: new Date(Date.now() + 3600000),
-      });
-    res.json({ message: "New user had been created" ,user});
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 60 * 60 * 1000, // 1 hour
+    };
+    res.cookie("token", jwtTOken, cookieOptions);
+    res.json({ message: "New user had been created", user });
   } catch (error) {
     res.status(400).send("The user is not saved" + error);
   }
@@ -48,9 +52,13 @@ authRouter.post("/login", async (req, res) => {
 
     if (ispassValid) {
       const jwtTOken = await user.getJWT(); //used user schema
-      res.cookie("token", jwtTOken, {
-        expires: new Date(Date.now() + 3600000),
-      }); //added cookie expiry to 1 hr
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 60 * 60 * 1000, // 1 hour
+      };
+      res.cookie("token", jwtTOken, cookieOptions); //added cookie expiry to 1 hr
       res.send(user);
     } else {
       throw new Error("Incorrect Password");
@@ -61,11 +69,13 @@ authRouter.post("/login", async (req, res) => {
 });
 authRouter.post("/logout", async (req, res) => {
   try {
-    res
-      .cookie("token", null, {
-        expires: new Date(Date.now()),
-      })
-      .send("Logout done"); //Used chaining method that is a good practice
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 0,
+    };
+    res.cookie("token", "", cookieOptions).send("Logout done");
   } catch (error) {
     console.log(error);
     res.status(400).send("Logout faild");
