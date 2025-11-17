@@ -6,7 +6,7 @@ const app = express();
 const cors= require("cors");
 // Always remeber to use‼️await‼️‼️
 app.use(cors({
-  origin:`${process.env.FRONRTEND_URL}`|| `http://localhost:${process.env.FRONTEND_PORT}`,
+  origin:process.env.FRONTEND_URL,
   credentials: true,
 }));
 app.use(express.json());
