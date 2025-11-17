@@ -6,7 +6,7 @@ const app = express();
 const cors= require("cors");
 // Always remeber to use‼️await‼️‼️
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: `http://localhost:${process.env.FRONTEND_PORT || 3000}`,
   credentials: true,
 }));
 app.use(express.json());
@@ -20,9 +20,9 @@ app.use("/", userRouter);
 connectDB()
   .then(() => {
     console.log("MongoDb setup done");
-    app.listen(7777, () => {
+    app.listen(process.env.PORT || 7777, () => {
       console.log(
-        "server has been succesfullly listening at http://localhost:7777/"
+        `server has been succesfullly listening at http://localhost:${process.env.PORT || 7777}/`
       );
     });
   })
