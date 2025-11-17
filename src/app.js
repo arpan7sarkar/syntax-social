@@ -5,10 +5,26 @@ const { connectDB } = require("./config/database.js");
 const app = express();
 const cors= require("cors");
 // Always remeber to use‼️await‼️‼️
-app.use(cors({
-  origin:process.env.FRONTEND_URL,
-  credentials: true,
-}));
+// Normalize configured frontend URL (strip trailing slash(es)) and
+// validate incoming request origin so the header exactly matches.
+const configuredFrontendUrl = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.replace(/\/+$/, "")
+  : "";
+app.use(
+  cors({
+    origin: (requestOrigin, callback) => {
+      // Allow non-browser requests (like curl, server-to-server) with no origin
+      if (!requestOrigin) return callback(null, true);
+      const normalizedIncoming = requestOrigin.replace(/\/+$/, "");
+      if (configuredFrontendUrl && normalizedIncoming === configuredFrontendUrl) {
+        return callback(null, true);
+      }
+      // Not allowed by CORS
+      return callback(new Error("CORS policy: origin not allowed"), false);
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 const {authRouter,profileRouter,connectionRouter,userRouter}=require("./routers/index.route.js");
 app.use("/", authRouter);
