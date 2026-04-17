@@ -145,7 +145,9 @@ npm run dev
 npm start
 ```
 
-The server will start running on `http://localhost:7777`
+The server will start running on:
+- `http://localhost:3001` in development by default (`DEV_PORT`, fallback `3001`)
+- `http://localhost:7777` in production by default (`PORT`, fallback `7777`)
 
 ## 🔧 Configuration
 
