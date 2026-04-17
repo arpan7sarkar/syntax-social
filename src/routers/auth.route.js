@@ -3,6 +3,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const authRouter = express.Router();
+const { env } = require("../config/env");
 
 const { userModel } = require("../model/user.js");
 const { validateUser } = require("../utils/validation.js");
@@ -30,8 +31,8 @@ authRouter.post("/signup", async (req, res) => {
     const jwtTOken = await user.getJWT(); //used user schema
     const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.isProduction,
+      sameSite: env.isProduction ? "none" : "lax",
       maxAge: 60 * 60 * 1000, // 1 hour
     };
     res.cookie("token", jwtTOken, cookieOptions);
@@ -54,8 +55,8 @@ authRouter.post("/login", async (req, res) => {
       const jwtTOken = await user.getJWT(); //used user schema
       const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: env.isProduction,
+        sameSite: env.isProduction ? "none" : "lax",
         maxAge: 60 * 60 * 1000, // 1 hour
       };
       res.cookie("token", jwtTOken, cookieOptions); //added cookie expiry to 1 hr
@@ -71,8 +72,8 @@ authRouter.post("/logout", async (req, res) => {
   try {
     const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.isProduction,
+      sameSite: env.isProduction ? "none" : "lax",
       maxAge: 0,
     };
     res.cookie("token", "", cookieOptions).send("Logout done");

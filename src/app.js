@@ -1,15 +1,13 @@
 console.log("Starting a new project");
-require("dotenv").config();
 const express = require("express");
 const { connectDB } = require("./config/database.js");
+const { env } = require("./config/env.js");
 const app = express();
 const cors= require("cors");
 // Always remeber to use‼️await‼️‼️
 // Normalize configured frontend URL (strip trailing slash(es)) and
 // validate incoming request origin so the header exactly matches.
-const configuredFrontendUrl = process.env.FRONTEND_URL
-  ? process.env.FRONTEND_URL.replace(/\/+$/, "")
-  : "";
+const configuredFrontendUrl = env.frontendUrl;
 app.use(
   cors({
     origin: (requestOrigin, callback) => {
@@ -36,9 +34,9 @@ app.use("/", userRouter);
 connectDB()
   .then(() => {
     console.log("MongoDb setup done");
-    app.listen(process.env.PORT || 7777, () => {
+    app.listen(env.port, () => {
       console.log(
-        `server has been succesfullly listening at http://localhost:${process.env.PORT || 7777}/`
+        `server has been succesfullly listening at http://localhost:${env.port}/`
       );
     });
   })

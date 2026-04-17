@@ -1,6 +1,6 @@
-require("dotenv").config();
 const { userModel } = require("../../model/user");
 const jwt = require("jsonwebtoken");
+const { env } = require("../../config/env");
 
 
 const userAuth = async (req, res, next) => {
@@ -12,7 +12,7 @@ const userAuth = async (req, res, next) => {
       return res.status(401).send("Please login first");
     }
     //validate the token
-    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = await jwt.verify(token, env.jwtSecret);
     if (!decoded) {
       throw new Error("Something went wrong Please relogin ");
       //Token is wrong

@@ -130,6 +130,10 @@ cp .example.env .env
 # Add your configuration
 MONGO_URL=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
+NODE_ENV=development
+DEV_PORT=3001
+FRONTEND_URL_DEV=http://localhost:5173
+FRONTEND_URL_PROD=https://your-frontend-domain.com
 ```
 
 4. **Start the application**
@@ -141,7 +145,9 @@ npm run dev
 npm start
 ```
 
-The server will start running on `http://localhost:7777`
+The server will start running on:
+- `http://localhost:3001` in development by default (`DEV_PORT`, fallback `3001`)
+- `http://localhost:7777` in production by default (`PORT`, fallback `7777`)
 
 ## 🔧 Configuration
 
@@ -149,6 +155,12 @@ The server will start running on `http://localhost:7777`
 ```env
 MONGO_URL=mongodb://localhost:27017/syntax-social
 JWT_SECRET=your-super-secure-secret-key
+# Development only.
+DEV_PORT=3001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
+FRONTEND_URL_DEV=http://localhost:5173
+FRONTEND_URL_PROD=https://your-frontend-domain.com
 ```
 
 ### Database Schema
