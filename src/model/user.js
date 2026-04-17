@@ -3,6 +3,7 @@ const validate = require("validator");
 const jwt=require("jsonwebtoken")
 const bcrypt = require("bcrypt");
 const { isEmail, isStrongPassword } = require("validator");
+const { env } = require("../config/env");
 const userSchema = new mongoose.Schema(
   {
     fName: {
@@ -46,7 +47,7 @@ const userSchema = new mongoose.Schema(
 );
 //create JWT token schema
 userSchema.methods.getJWT=async function() {
-    return token=await jwt.sign({_id:this.id},process.env.JWT_SECRET,{expiresIn:'1h'})
+    return token=await jwt.sign({_id:this.id},env.jwtSecret,{expiresIn:'1h'})
 }
 userSchema.methods.validatePassword=async function(password){
     return ispassValid = await bcrypt.compare(password, this.password);
