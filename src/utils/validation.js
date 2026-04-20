@@ -16,7 +16,7 @@ const validateUser = (req) => {
     );
   }
 };
-const validForEdit =async (req) => {
+const validForEdit = (req) => {
   const editable = [
     "fName",
     "lName",
@@ -26,10 +26,7 @@ const validForEdit =async (req) => {
     "about",
     "photoUrl"
   ];
-  const isEditable = await Object.keys(req.body).every((field) => {
-    editable.includes(field)
-  });
-  return isEditable;
+  return Object.keys(req.body).every((field) => editable.includes(field));
 };
 const validPass=(password)=>{
     return isStrongPassword(password);
