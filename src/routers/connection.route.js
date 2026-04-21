@@ -91,4 +91,35 @@ connectionRouter.post(
   }
 );
 
+// Remove an accepted connection between the logged-in user and the other user.
+// Param name follows PRD ("connectionId"), but the UI passes the other user's id.
+connectionRouter.delete("/request/remove/:connectionId", userAuth, async (req, res) => {
+  try {
+    const loggedInUserId = req.user._id;
+    const otherUserId = req.params.connectionId;
+
+    if (!mongoose.Types.ObjectId.isValid(otherUserId)) {
+      return res.status(400).json({ message: "Invalid connectionId" });
+    }
+
+    const existing = await connectionModel.findOne({
+      status: "accepted",
+      $or: [
+        { fromUserId: loggedInUserId, toUserId: otherUserId },
+        { fromUserId: otherUserId, toUserId: loggedInUserId },
+      ],
+    });
+
+    if (!existing) {
+      return res.status(404).json({ message: "No accepted connection found" });
+    }
+
+    await connectionModel.deleteOne({ _id: existing._id });
+    return res.status(200).json({ message: "Connection removed" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Facing some errors" });
+  }
+});
+
 module.exports = { connectionRouter };

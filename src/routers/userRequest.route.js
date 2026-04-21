@@ -2,7 +2,7 @@ const express = require("express");
 const userRouter = express.Router();
 const { userAuth } = require("../utils/middlewares/auth");
 const { connectionModel } = require("../model/connectionRequest");
-const USER_PUBLIC_DATA = "fName lName photoUrl about age";
+const USER_PUBLIC_DATA = "fName lName photoUrl about age gender skills";
 const { userModel } = require("../model/user.js");
 userRouter.get("/user/request/recived", userAuth, async (req, res) => {
   try {
